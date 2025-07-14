@@ -29,6 +29,12 @@
       margin-bottom: 20px;
     }
 
+    #pomodoro-count {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
     .buttons {
       display: flex;
       gap: 10px;
@@ -50,12 +56,13 @@
   </style>
 </head>
 <body>
-  <div id="mode">Trabajo</div>
+  <div id="mode">a chambear</div>
   <div id="timer">60:00</div>
   <div class="buttons">
     <button id="startPauseBtn" onclick="togglePause()">Start</button>
     <button onclick="skipPhase()">Skip</button>
   </div>
+  <div id="pomodoro-count">Pomodoros completados: 0</div>
 
   <!-- Sonido al cambiar de fase -->
   <audio id="phase-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
@@ -70,23 +77,26 @@
     let timeLeft = workDuration;
     let isPaused = true;
     let hasStarted = false;
+    let pomodoroCount = 0;
 
     const timerDisplay = document.getElementById('timer');
     const modeDisplay = document.getElementById('mode');
     const startPauseBtn = document.getElementById('startPauseBtn');
     const startSound = document.getElementById('start-sound');
     const phaseSound = document.getElementById('phase-sound');
+    const pomodoroDisplay = document.getElementById('pomodoro-count');
 
     function updateDisplay() {
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
       timerDisplay.textContent = 
         `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      modeDisplay.textContent = isWorking ? "Trabajo" : "Descanso";
+      modeDisplay.textContent = isWorking ? "a chambear" : "descansito";
+      pomodoroDisplay.textContent = `Pomodoros completados: ${pomodoroCount}`;
     }
 
     function updateButtonText() {
-      startPauseBtn.textContent = isPaused ? "▶️ Iniciar" : "⏸️ Pausar";
+      startPauseBtn.textContent = isPaused ? "Start" : "Skip";
     }
 
     function tick() {
@@ -114,6 +124,10 @@
 
     function skipPhase() {
       phaseSound.play();
+
+      // Si se salta una fase de trabajo, también suma
+      if (isWorking) pomodoroCount++;
+
       isWorking = !isWorking;
       timeLeft = isWorking ? workDuration : breakDuration;
       updateDisplay();
