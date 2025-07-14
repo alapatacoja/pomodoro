@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Animedoro Timer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffffff;
+      color: #000000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #mode {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    #timer {
+      font-size: 5em;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: 1px solid #000;
+      background: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div id="mode">Trabajo</div>
+  <div id="timer">60:00</div>
+  <div class="buttons">
+    <button id="startPauseBtn" onclick="togglePause()">Start</button>
+    <button onclick="skipPhase()">Skip</button>
+  </div>
+
+  <!-- Sonido al cambiar de fase -->
+  <audio id="phase-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+  <!-- Sonido al iniciar -->
+  <audio id="start-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
+
+  <script>
+    const workDuration = 60 * 60; // 60 min
+    const breakDuration = 20 * 60; // 20 min
+    let isWorking = true;
+    let timeLeft = workDuration;
+    let isPaused = true;
+    let hasStarted = false;
+    let interval;
+
+    const timerDisplay = document.getElementById('timer');
+    const modeDisplay = document.getElementById('mode');
+    const phaseSound = document.getElementById('phase-sound');
+    const startSound = document.getElementById('start-sound');
+    const startPauseBtn = document.getElementById('startPauseBtn');
+
+    function updateDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      timerDisplay.textContent = 
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      modeDisplay.textContent = isWorking ? "a chambear" : "hora de lokear";
+    }
+
+    function updateButtonText() {
+      startPauseBtn.textContent = isPaused ? "Start" : "Pause";
+    }
+
+    function tick() {
+      if (!isPaused) {
+        timeLeft--;
+        if (timeLeft < 0) {
+          phaseSound.play();
+          isWorking = !isWorking;
+          timeLeft = isWorking ? workDuration : breakDuration;
+        }
+        updateDisplay();
+      }
+    }
+
+    function togglePause() {
+      if (!hasStarted) {
+        startSound.play();
+        hasStarted = true;
+      }
+      isPaused = !isPaused;
+      updateButtonText();
+    }
+
+    function skipPhase() {
+      phaseSound.play();
+      isWorking = !isWorking;
+      timeLeft = isWorking ? workDuration : breakDuration;
+      updateDisplay();
+    }
+
+    updateDisplay();
+    updateButtonText();
+    interval = setInterval(tick, 1000);
+  </script>
+</body>
+</html>
