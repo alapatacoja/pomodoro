@@ -63,30 +63,30 @@
   <audio id="start-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg" preload="auto"></audio>
 
   <script>
-    const workDuration = 60 * 60; // 60 min
-    const breakDuration = 20 * 60; // 20 min
+     const workDuration = 60 * 60; // 60 minutos
+    const breakDuration = 20 * 60; // 20 minutos
+
     let isWorking = true;
     let timeLeft = workDuration;
     let isPaused = true;
     let hasStarted = false;
-    let interval;
 
     const timerDisplay = document.getElementById('timer');
     const modeDisplay = document.getElementById('mode');
-    const phaseSound = document.getElementById('phase-sound');
-    const startSound = document.getElementById('start-sound');
     const startPauseBtn = document.getElementById('startPauseBtn');
+    const startSound = document.getElementById('start-sound');
+    const phaseSound = document.getElementById('phase-sound');
 
     function updateDisplay() {
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
       timerDisplay.textContent = 
         `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      modeDisplay.textContent = isWorking ? "a chambear" : "hora de lokear";
+      modeDisplay.textContent = isWorking ? "Trabajo" : "Descanso";
     }
 
     function updateButtonText() {
-      startPauseBtn.textContent = isPaused ? "Start" : "Pause";
+      startPauseBtn.textContent = isPaused ? "▶️ Iniciar" : "⏸️ Pausar";
     }
 
     function tick() {
@@ -96,6 +96,8 @@
           phaseSound.play();
           isWorking = !isWorking;
           timeLeft = isWorking ? workDuration : breakDuration;
+          // NO pausar tras el descanso: sigue solo
+          updateDisplay();
         }
         updateDisplay();
       }
@@ -119,7 +121,7 @@
 
     updateDisplay();
     updateButtonText();
-    interval = setInterval(tick, 1000);
+    setInterval(tick, 1000);
   </script>
 </body>
 </html>
